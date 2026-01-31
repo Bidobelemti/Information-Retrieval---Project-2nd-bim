@@ -5,7 +5,6 @@ import nltk
 from nltk.stem import porter
 from nltk.corpus import stopwords
 import unicodedata
-from collections import Counter
 
 nltk.download('stopwords')
 stemmer = porter.PorterStemmer()
