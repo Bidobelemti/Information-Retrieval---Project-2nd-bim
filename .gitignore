@@ -1,0 +1,4 @@
+/data
+/notebooks
+.env
+/src/__pycache__
