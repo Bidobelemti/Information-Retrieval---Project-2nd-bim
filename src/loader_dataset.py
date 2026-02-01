@@ -4,31 +4,26 @@ import os
 from src.preprocessing import clean_text
 
 
-def load_names(csv_paths: list[str], img_dir: str)->pd.DataFrame:
-    '''
-    ## Input
-        - csv_paths: list[str]
-
-            Es una lista que contiene los paths de cada csv a usar
-        - img_dir: str
-
-            Es el path del directorio que contiene las imagenes
-    ## Output
-        - pd.DataFrame
-            Retorna un DataFrame con columnas 'image_path', 'caption' (nombre de la imagen) 
-    '''
+def load_names(csv_paths: list[str], img_dir: str) -> pd.DataFrame:
     rows = []
 
-    df_name_img = pd.concat([pd.read_csv(p) for p in csv_paths],ignore_index=True)
-    df_name_img = df_name_img[['name', 'imageURLs']].drop_duplicates(subset = 'name').dropna(subset = 'imageURLs')
+    df_name_img = pd.concat(
+        [pd.read_csv(p) for p in csv_paths],
+        ignore_index=True
+    )
+
+    df_name_img = df_name_img[['name', 'imageURLs']].dropna(subset=['imageURLs'])
     df_name_img['name'] = df_name_img['name'].apply(clean_text)
+
+    valid_names = set(df_name_img['name'].values)
+
     for img_file in os.listdir(img_dir):
         if not img_file.endswith('.jpg'):
             continue
 
         img_stem = img_file.rsplit("_", 1)[0]
 
-        if img_stem in df_name_img['name'].values:
+        if img_stem in valid_names:
             rows.append({
                 'image_path': os.path.join(img_dir, img_file).replace('\\', '/'),
                 'caption': img_stem
