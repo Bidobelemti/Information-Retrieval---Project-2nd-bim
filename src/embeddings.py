@@ -46,9 +46,14 @@ def generate_image_embeddings (image_dir: list[str], model_name = "clip-ViT-B-32
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     model = model.to(device)
     all_embeddings = []
+    imgs = []
+    valid_paths = []
     try:
         image_paths = [os.path.join(image_dir, f) for f in os.listdir(image_dir) if f.lower().endswith('.jpg')]
-        imgs = [Image.open(p).convert('RGB').resize(resize_to) for p in image_paths]
+        for p in image_paths:
+                img = Image.open(p).convert('RGB').resize(resize_to)
+                imgs.append(img)
+                valid_paths.append(p)
     except:
         pass
     all_embeddings = model.encode(
@@ -106,9 +111,9 @@ def combine_img_embeddings_text_embeddings (txt_embeddings : np.ndarray, img_emb
         img_vec = np.array(img_vec)
         # linalg, normaliza cada vector
         text_vec /= np.linalg.norm(text_vec)
-        image_vec /= np.linalg.norm(image_vec)
+        img_vec /= np.linalg.norm(img_vec)
         # linalg, normalizamos la combinación
-        combined = alpha * text_vec + (1 - alpha) * image_vec
+        combined = alpha * text_vec + (1 - alpha) * img_vec
         combined /= np.linalg.norm(combined)
 
         combined_emb.append(combined)
