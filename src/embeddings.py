@@ -49,7 +49,7 @@ def generate_image_embeddings (image_dir: list[str], model_name = "clip-ViT-B-32
     imgs = []
     valid_paths = []
     try:
-        image_paths = [os.path.join(image_dir, f) for f in os.listdir(image_dir) if f.lower().endswith('.jpg')]
+        image_paths = [os.path.join(image_dir, f).replace('\\', '/') for f in os.listdir(image_dir) if f.lower().endswith('.jpg')]
         for p in image_paths:
                 img = Image.open(p).convert('RGB').resize(resize_to)
                 imgs.append(img)
