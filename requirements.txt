@@ -1,0 +1,13 @@
+pandas
+numpy
+python-dotenv
+nltk
+sentence-transformers
+transformers
+torch
+torchvision
+google-generativeai
+faiss-cpu
+gradio
+Pillow
+unicodedata2
