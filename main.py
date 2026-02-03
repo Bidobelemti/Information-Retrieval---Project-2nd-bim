@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import pandas as pd
+import google.generativeai as genai
 
 from dotenv import load_dotenv
 
@@ -9,12 +10,18 @@ from src.embeddings import generate_text_embeddings, generate_image_embeddings, 
 from src.vector import build_vector_index, search_similar_vectors, save_index, load_index
 from src.preprocessing import merge_captions_by_image, preprocess_documents
 
+from src.UI.interface import launch_ui
+
+# Carga de API de google para RAG
 load_dotenv()
-api_key = os.getenv('GEMINI_API_KEY')
+API_KEY = os.getenv('GEMINI_API_KEY')
+genai.configure(api_key=API_KEY)
+client = genai.GenerativeModel('gemini-3-flash-preview')
+
 TOP_K = 3
 
-paths = ['../data/Datafiniti_Amazon_Consumer_Reviews_of_Amazon_Products.csv','../data/Datafiniti_Amazon_Consumer_Reviews_of_Amazon_Products_May19.csv','../data/1429_1.csv' ]
-img_dir = '../data/img'
+paths = ['data/Datafiniti_Amazon_Consumer_Reviews_of_Amazon_Products.csv','data/Datafiniti_Amazon_Consumer_Reviews_of_Amazon_Products_May19.csv','data/1429_1.csv' ]
+img_dir = 'data/img'
 
 df_raw = load_names(paths, img_dir)
 df = merge_captions_by_image(df_raw, image_col='image_path', caption_col='caption')
@@ -38,3 +45,8 @@ combined_emb = combine_img_embeddings_text_embeddings(np.array(df['text_embeddin
 
 index_faiss = build_vector_index(np.array(combined_emb))
 save_index(index_faiss)
+for m in genai.list_models():
+    if 'generateContent' in m.supported_generation_methods:
+#        print(f"Modelo disponible: {m.name}")
+        pass
+launch_ui(df, index_faiss, client)
