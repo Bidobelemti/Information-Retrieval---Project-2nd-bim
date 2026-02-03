@@ -49,7 +49,7 @@ def build_prompt (query: str, retrieved_docs : list[str]) -> str:
     {query}
     """
 
-def generate_response (client, prompt : str, model_ = "gemini-3-flash-preview") -> str:
+def generate_response (client, prompt : str, model_ = 'gemini-1.5-flash') -> str:
     '''
     Permite generar una respuesta generativa por parte de un LLM
     ## Input
@@ -67,9 +67,6 @@ def generate_response (client, prompt : str, model_ = "gemini-3-flash-preview") 
         -str
             Respuesta generada
     '''
-    response = client.models.generate_content(
-        model=model_,
-        contents=prompt,
-    )
+    response = client.generate_content(prompt)
 
     return response.text
